@@ -7,10 +7,10 @@ public class Mole : MonoBehaviour
     BoxCollider2D myColl;
 
     [Space(10)]
-    [SerializeField] UnityEvent OnAppearanceEvent;
-    [SerializeField] UnityEvent OnProcessEvent;
-    [SerializeField] UnityEvent OnHitEvent;
+    [SerializeField] UnityEvent OnShowEvent;
+    [SerializeField] UnityEvent OnIdleEvent;
     [SerializeField] UnityEvent OnHideEvent;
+    [SerializeField] UnityEvent OnHitEvent;
     [SerializeField] UnityEvent OnNoDamageEvent;
 
     private void Start()
@@ -20,13 +20,14 @@ public class Mole : MonoBehaviour
 
     private void OnMouseDown()
     {
+        OnHitEvent.Invoke();
         myColl.enabled = false;
-
         GameManager.Instance.UpdatePlayerScore(transform.position);
     }
 
     public IEnumerator Show()
     {
+        OnShowEvent.Invoke();
         myColl.enabled = true;
 
         float et = 0.0f;
@@ -45,14 +46,19 @@ public class Mole : MonoBehaviour
 
         transform.localScale = targetSize;
 
+        et = 0.0f;
         float delayTime = GameManager.Instance.currentDelayTime;
-        yield return new WaitForSeconds(delayTime);
+        while(et < delayTime)
+        {
+            OnIdleEvent.Invoke();
+        }
 
         et = 0.0f;
         duration = GameManager.Instance.currentDisappearanceTime;
 
         initSize = Vector3.one;
         targetSize = Vector3.zero;
+        OnNoDamageEvent.Invoke();
 
         while (et < duration)
         {
@@ -62,6 +68,7 @@ public class Mole : MonoBehaviour
             yield return null;
         }
 
+        OnHideEvent.Invoke();
         transform.localScale = targetSize;
     }
 }
