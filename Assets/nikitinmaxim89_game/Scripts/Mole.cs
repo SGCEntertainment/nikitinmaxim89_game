@@ -51,6 +51,7 @@ public class Mole : MonoBehaviour
         while(et < delayTime)
         {
             OnIdleEvent.Invoke();
+            yield return null;
         }
 
         et = 0.0f;
