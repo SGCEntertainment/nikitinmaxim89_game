@@ -5,7 +5,6 @@ using UnityEngine.Events;
 public class Mole : MonoBehaviour
 {
     BoxCollider2D myColl;
-    SpriteRenderer myRend;
 
     [Space(10)]
     [SerializeField] UnityEvent OnAppearanceEvent;
@@ -17,13 +16,11 @@ public class Mole : MonoBehaviour
     private void Start()
     {
         myColl = GetComponent<BoxCollider2D>();
-        myRend = GetComponent<SpriteRenderer>();
     }
 
     private void OnMouseDown()
     {
         myColl.enabled = false;
-        myRend.enabled = false;
 
         GameManager.Instance.UpdatePlayerScore(transform.position);
     }
@@ -31,7 +28,6 @@ public class Mole : MonoBehaviour
     public IEnumerator Show()
     {
         myColl.enabled = true;
-        myRend.enabled = true;
 
         float et = 0.0f;
         float duration = GameManager.Instance.currentAppearanceTime;

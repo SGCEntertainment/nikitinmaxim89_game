@@ -153,8 +153,10 @@ public class GameManager : MonoBehaviour
             bottomScoreCountText.text = (++bottomScoreCount).ToString();
         }
 
+        Vector2 position = playerId > 0 ? new Vector2(molePosition.x, molePosition.y + 0.5f) : new Vector2(molePosition.x, molePosition.y - 0.5f);
         Quaternion rotation = playerId > 0 ? Quaternion.Euler(Vector3.zero) : Quaternion.Euler(0, 0, 180);
-        GameObject coinGo = Instantiate(gameConfig.coinPrefab, molePosition, rotation);
+
+        GameObject coinGo = Instantiate(gameConfig.coinPrefab, position, rotation);
         Destroy(coinGo, 1.0f);
     }
 
