@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Game Config
   m_EditorClassIdentifier: 
   gameDuration: 60
+  interval: 6
   appearanceTime: 0.3
   disappearanceTime: 0.2
   delayTime: 0.65
-  maxMoleCount: 3
+  moleCount: 1
+  deltaDifficulty: 0.1
   maxDifficulty: 1

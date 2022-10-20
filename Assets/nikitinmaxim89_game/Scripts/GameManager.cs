@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.UI;
 using UnityEngine;
-using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,6 +19,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    bool gameStarted;
+
+    float currentDifficulty;
+    int currentMoleCount;
+
+    [HideInInspector]
+    public float currentAppearanceTime;
+
+    [HideInInspector]
+    public float currentDisappearanceTime;
+
+    [HideInInspector]
+    public float currentDelayTime;
+
+
     Mole[] topMoles;
     Mole[] bottomMoles;
 
@@ -28,17 +43,69 @@ public class GameManager : MonoBehaviour
     IEnumerator gameProcessTop;
     IEnumerator gameProcessBottom;
 
+    float currentTimerCount;
+    Text timerText;
+
+    int topScoreCount;
+    Text topScoreCountText;
+
+    int bottomScoreCount;
+    Text bottomScoreCountText;
+
+
     public GameConfig gameConfig;
+
+    private void Awake()
+    {
+        CacheComponents();
+    }
 
     private void Start()
     {
-        CacheComponents();
-
         StartGame();
+    }
+
+    private void Update()
+    {
+        if(!gameStarted)
+        {
+            return;
+        }
+
+        UpdateTimer();
+    }
+
+    void UpdateTimer()
+    {
+        currentTimerCount -= Time.deltaTime;
+
+        float min = Mathf.FloorToInt(currentTimerCount / 60);
+        float sec = Mathf.FloorToInt(currentTimerCount % 60);
+
+        if (currentTimerCount <= 0)
+        {
+            currentTimerCount = 0;
+            timerText.text = string.Format("{0:00}:{0:00}", 0, 0);
+
+            StopCoroutine(gameProcessTop);
+            StopCoroutine(gameProcessBottom);
+
+            CancelInvoke(nameof(UpdateDifficult));
+
+            gameStarted = false;
+            return;
+        }
+
+        timerText.text = string.Format("{0:00}:{1:00}", min, sec);
     }
 
     void CacheComponents()
     {
+        timerText = GameObject.Find("timerText").GetComponent<Text>();
+
+        topScoreCountText = GameObject.Find("top score").GetComponent<Text>();
+        bottomScoreCountText = GameObject.Find("bottom score").GetComponent<Text>();
+
         topPlayer = GameObject.Find("top_player").transform;
         bottomPlayer = GameObject.Find("bottom_player").transform;
 
@@ -68,8 +135,38 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void UpdateDifficult()
+    {
+        currentDifficulty += gameConfig.deltaDifficulty;
+    }
+
+    public void UpdatePlayerScore()
+    {
+        int playerId = Camera.main.ScreenToWorldPoint(Input.mousePosition).y > 0 ? 0 : 1;
+
+        if(playerId == 0)
+        {
+            topScoreCountText.text = (++topScoreCount).ToString();
+        }
+        else
+        {
+            bottomScoreCountText.text = (++bottomScoreCount).ToString();
+        }
+    }
+
     public void StartGame()
     {
+        topScoreCount = 0;
+        bottomScoreCount = 0;
+
+        currentTimerCount = gameConfig.gameDuration;
+
+        currentAppearanceTime = gameConfig.appearanceTime;
+        currentDisappearanceTime = gameConfig.disappearanceTime;
+
+        currentDelayTime = gameConfig.delayTime;
+        currentMoleCount = gameConfig.moleCount;
+
         HildeAllMoles();
 
         gameProcessTop = GameProcess(topMoles);
@@ -77,18 +174,22 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine(gameProcessTop);
         StartCoroutine(gameProcessBottom);
+
+        InvokeRepeating(nameof(UpdateDifficult), 0.0f, gameConfig.interval);
+
+        gameStarted = true;
     }
 
     IEnumerator GameProcess(Mole[] playerMoles)
     {
         while (true)
         {
-            int count = gameConfig.maxMoleCount;
+            int count = currentMoleCount;
             List<Mole> molesInGame = new List<Mole>();
 
             while (molesInGame.Count != count)
             {
-                Mole tmp = playerMoles[UnityEngine.Random.Range(0, playerMoles.Length)];
+                Mole tmp = playerMoles[Random.Range(0, playerMoles.Length)];
                 if (molesInGame.Contains(tmp))
                 {
                     continue;
@@ -104,7 +205,8 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
 
-            yield return new WaitForSeconds(gameConfig.delayTime + UnityEngine.Random.Range(1.0f, 2.0f));
+            float returnAfterSeconds = currentDelayTime + currentAppearanceTime + Random.Range(1.0f, 2.0f);
+            yield return new WaitForSeconds(returnAfterSeconds);
         }
     }
 }

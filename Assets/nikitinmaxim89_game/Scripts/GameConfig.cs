@@ -5,6 +5,7 @@ public class GameConfig : ScriptableObject
 {
     [Space(10)]
     public float gameDuration;
+    public float interval;
 
     [Space(10)]
     public float appearanceTime;
@@ -12,6 +13,9 @@ public class GameConfig : ScriptableObject
 
     [Space(10)]
     public float delayTime;
-    public int maxMoleCount;
+    public int moleCount;
+
+    [Space(10)]
+    public float deltaDifficulty;
     public float maxDifficulty;
 }

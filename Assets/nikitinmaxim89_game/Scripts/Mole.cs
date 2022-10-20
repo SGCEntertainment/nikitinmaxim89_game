@@ -4,6 +4,8 @@ using UnityEngine.Events;
 
 public class Mole : MonoBehaviour
 {
+    BoxCollider2D myColl;
+
     [Space(10)]
     [SerializeField] UnityEvent OnAppearanceEvent;
     [SerializeField] UnityEvent OnProcessEvent;
@@ -11,10 +13,23 @@ public class Mole : MonoBehaviour
     [SerializeField] UnityEvent OnHideEvent;
     [SerializeField] UnityEvent OnNoDamageEvent;
 
+    private void Start()
+    {
+        myColl = GetComponent<BoxCollider2D>();
+    }
+
+    private void OnMouseDown()
+    {
+        myColl.enabled = false;
+        GameManager.Instance.UpdatePlayerScore();
+    }
+
     public IEnumerator Show()
     {
+        myColl.enabled = true;
+
         float et = 0.0f;
-        float duration = GameManager.Instance.gameConfig.appearanceTime;
+        float duration = GameManager.Instance.currentAppearanceTime;
 
         Vector3 initSize = Vector3.zero;
         Vector2 targetSize = Vector3.one;
@@ -29,11 +44,11 @@ public class Mole : MonoBehaviour
 
         transform.localScale = targetSize;
 
-        float delayTime = GameManager.Instance.gameConfig.delayTime;
+        float delayTime = GameManager.Instance.currentDelayTime;
         yield return new WaitForSeconds(delayTime);
 
         et = 0.0f;
-        duration = GameManager.Instance.gameConfig.disappearanceTime;
+        duration = GameManager.Instance.currentDisappearanceTime;
 
         initSize = Vector3.one;
         targetSize = Vector3.zero;
