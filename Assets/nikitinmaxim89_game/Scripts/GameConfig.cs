@@ -4,6 +4,9 @@ using UnityEngine;
 public class GameConfig : ScriptableObject
 {
     [Space(10)]
+    public GameObject coinPrefab;
+
+    [Space(10)]
     public float gameDuration;
     public float interval;
 

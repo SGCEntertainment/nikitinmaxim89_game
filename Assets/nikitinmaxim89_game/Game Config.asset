@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d35a01f29aae8e541b943bf923c6ecda, type: 3}
   m_Name: Game Config
   m_EditorClassIdentifier: 
+  coinPrefab: {fileID: 1442184722454465731, guid: 91105ff1ee6309a45bab89e824f97e27, type: 3}
   gameDuration: 60
   interval: 6
   appearanceTime: 0.3

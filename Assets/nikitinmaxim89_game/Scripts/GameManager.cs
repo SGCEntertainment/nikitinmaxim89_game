@@ -140,7 +140,7 @@ public class GameManager : MonoBehaviour
         currentDifficulty += gameConfig.deltaDifficulty;
     }
 
-    public void UpdatePlayerScore()
+    public void UpdatePlayerScore(Vector2 molePosition)
     {
         int playerId = Camera.main.ScreenToWorldPoint(Input.mousePosition).y > 0 ? 0 : 1;
 
@@ -152,6 +152,10 @@ public class GameManager : MonoBehaviour
         {
             bottomScoreCountText.text = (++bottomScoreCount).ToString();
         }
+
+        Quaternion rotation = playerId > 0 ? Quaternion.Euler(Vector3.zero) : Quaternion.Euler(0, 0, 180);
+        GameObject coinGo = Instantiate(gameConfig.coinPrefab, molePosition, rotation);
+        Destroy(coinGo, 1.0f);
     }
 
     public void StartGame()
